@@ -1,1 +1,3 @@
-export const Error404 = () => <div className="container">Pagina no existente :(</div>
+export default function Error404() {
+  return <div className='container'>Pagina no existente :(</div>;
+}

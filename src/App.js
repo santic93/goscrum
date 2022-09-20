@@ -3,8 +3,10 @@ import { AnimatePresence, motion } from 'framer-motion';
 import './App.css';
 import { Login } from './components/views/Login/Login';
 import { Register } from './components/views/Register/Register';
-import { Error404 } from './components/views/Error404/Error404';
 import { Task } from './components/views/Tasks/Task';
+import { lazy, Suspense } from 'react';
+
+const Error404 = lazy(() => import('./components/views/Error404/Error404'));
 
 const RequireAuth = ({ children }) => {
   if (!localStorage.getItem('logged')) {
@@ -62,7 +64,9 @@ export const App = () => {
               exit='out'
               variants={paginateTransition}
             >
+            <Suspense fallback={<>......</>}>
               <Error404 />
+              </Suspense>
             </motion.div>
           }
         />
