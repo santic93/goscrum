@@ -24,6 +24,7 @@ const paginateTransition = {
 export const App = () => {
   const location = useLocation();
   return (
+    
     <AnimatePresence>
       <Routes location={location} key={location.pathname}>
         <Route
