@@ -1,10 +1,11 @@
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import './App.css';
-import { Login } from './components/views/Login/Login';
-import { Register } from './components/views/Register/Register';
+import { Login } from './components/views/auth/Login/Login';
+import { Register } from './components/views/auth/Register/Register';
 import { Task } from './components/views/Tasks/Task';
 import { lazy, Suspense } from 'react';
+import Registeres from './components/views/Registered/Registeres';
 
 const Error404 = lazy(() => import('./components/views/Error404/Error404'));
 
@@ -24,7 +25,6 @@ const paginateTransition = {
 export const App = () => {
   const location = useLocation();
   return (
-    
     <AnimatePresence>
       <Routes location={location} key={location.pathname}>
         <Route
@@ -56,6 +56,20 @@ export const App = () => {
           }
         />
         <Route
+          path='/registered/:teamID'
+          element={
+            <motion.div
+              className='page'
+              initial='out'
+              animate='in'
+              exit='out'
+              variants={paginateTransition}
+            >
+              <Registeres />
+            </motion.div>
+          }
+        />
+        <Route
           path='*'
           element={
             <motion.div
@@ -65,8 +79,8 @@ export const App = () => {
               exit='out'
               variants={paginateTransition}
             >
-            <Suspense fallback={<>......</>}>
-              <Error404 />
+              <Suspense fallback={<>......</>}>
+                <Error404 />
               </Suspense>
             </motion.div>
           }

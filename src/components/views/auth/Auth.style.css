@@ -1,5 +1,3 @@
-
-
 .auth {
   min-height: 100vh;
   display: flex;
@@ -24,17 +22,28 @@
   flex-wrap: wrap;
   justify-content: center;
   flex-direction: column;
-  padding: 5px;
+  padding: 5px 0;
+}
+.auth > form > div > div {
+  color: var(--global-primary-color);
+  font-size: 15px;
 }
 .auth > form > div > span {
   color: var(--global-primary-color);
   font-size: 15px;
 }
-
+.auth > form > div > a {
+  text-decoration: none;
+  color: black;
+}
 .auth > form > div > *:not(label) {
   padding: 8px 0;
 }
-.auth input {
+.auth > form > div > input,
+.auth > form > div > select {
+  padding: 8px !important;
+}
+.auth input .auth select {
   border-radius: var(--global-radius);
   border: var(--global-border);
 }
@@ -55,6 +64,11 @@
   color: var(--global-primary-color);
   padding: 10px !important;
   font-size: 16px;
+}
+.auth input.error,
+.auth select.error,
+.auth textarea.error {
+  border: 1px solid red;
 }
 @media screen and (max-width: 600px) {
   .auth {
