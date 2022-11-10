@@ -14,33 +14,25 @@ export const Login = () => {
       .required(required),
     password: Yup.string().required(required),
   });
+
   const onSubmit = () => {
     console.log('entre');
     //localStorage.setItem('logged', 'true');
     const { userName, password } = values;
-    fetch(
-      `${API_ENDPOINT}auth/login`,
-
-      {
-        mode: 'no-cors',
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-
-        body: JSON.stringify({
-          user: {
-            userName,
-            password,
-          },
-        }),
-      }
-    )
+    fetch(`https:${API_ENDPOINT}auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userName,
+        password,
+      }),
+    })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
-        // navigate('/', { replace: true });
-        // localStorage.setItem('logged', data?.result?.token);
+        navigate('/', { replace: true });
+        localStorage.setItem('logged', data?.result?.token);
       });
   };
   const formik = useFormik({ initialValues, validationSchema, onSubmit });
