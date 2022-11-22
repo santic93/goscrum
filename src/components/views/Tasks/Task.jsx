@@ -1,12 +1,41 @@
+import { useState, useEffect } from 'react';
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 import './Task.styles.css';
 import { useResize } from '../../../hooks/useResize';
 import { Header } from '../../Header/Header';
-import { cardsData } from './data';
 import Card from '../../Card/Card';
 import { TaskForm } from '../../TaskForm/TaskForm';
-
+import {
+  FormControl,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
+} from '@mui/material';
+const { REACT_APP_API_ENDPOINT: API_ENDPOINT } = process.env;
 export const Task = () => {
+  const [loading, setLoading] = useState(false);
+  const [renderList, setRenderList] = useState(null);
+  const [list, setList] = useState(null);
   const { isPhone } = useResize();
+  useEffect(() => {
+    setLoading(true);
+
+    fetch(`https:${API_ENDPOINT}task`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + localStorage.getItem('logged'),
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setList(data?.result);
+        setRenderList(data?.result);
+        setTimeout(() => {
+          setLoading(false);
+        }, 3000);
+      });
+  }, []);
   const limitString = (str) => {
     if (str.length > 370) {
       return { string: str.slice(0, 367).concat('...'), addButton: true };
@@ -14,63 +43,108 @@ export const Task = () => {
     }
   };
   const renderAllCards = () => {
-    return cardsData.map((data) => <Card key={data.id} data={data} />);
+    return renderList?.map((data) => <Card key={data.id} data={data} />);
+  };
+  const renderNewCards = () => {
+    return renderList
+      ?.filter((data) => data.status === 'NEW')
+      .map((data) => <Card key={data.id} data={data} />);
+  };
+  const renderInProgressCards = () => {
+    return renderList
+      ?.filter((data) => data.status === 'IN PROGRESS')
+      .map((data) => <Card key={data.id} data={data} />);
+  };
+  const renderFinishedCards = () => {
+    return list
+      ?.filter((data) => data.status === 'FINISHED')
+      .map((data) => <Card key={data.id} data={data} />);
+  };
+  const handleChangeImportance = (event) => {
+    if (event.currentTarget.value === 'ALL') {
+      setRenderList(list);
+    } else {
+      setRenderList(
+        list?.filter((data) => data.importance === event.currentTarget.value)
+      );
+    }
   };
   return (
     <>
       <Header />
       <main id='tasks'>
-      <TaskForm/>
+        <TaskForm />
         <section className='wrapper_list'>
           <div className='list_header'>
             <h2>Mis tareas</h2>
           </div>
+          <div className='filters'>
+            <FormControl>
+              <RadioGroup
+                row
+                aria-labelledby='demo-row-radio-buttons-group-label'
+                name='row-radio-buttons-group'
+              >
+                <FormControlLabel
+                  value='ALL'
+                  control={<Radio />}
+                  label='Todas'
+                />
+                <FormControlLabel
+                  value='ME'
+                  control={<Radio />}
+                  label='Mis tareas'
+                />
+              </RadioGroup>
+            </FormControl>
+            <select name='importance' onChange={handleChangeImportance}>
+              <option value=''>Seleccione una prioridad</option>
+              <option value='ALL'>Todas</option>
+              <option value='LOW'>Baja</option>
+              <option value='MEDIUM'>Media</option>
+              <option value='HIGH'>Alta</option>
+            </select>
+          </div>
           {isPhone ? (
-            <div className='list phone'>{renderAllCards()}</div>
+            !renderList?.length ? (
+              <div>No hay tareas creadas</div>
+            ) : loading ? (
+              <>
+                <Skeleton height={90} />
+                <Skeleton height={90} />
+                <Skeleton height={90} />
+              </>
+            ) : (
+              <div className='list phone'>{renderAllCards()}</div>
+            )
           ) : (
             <div className='list_group'>
-              <div className='list'>
-                <h4>Nuevas</h4>
-                <div className='card'>
-                  <div className='close'>X</div>
-                  <h3>Tarea 3</h3>
-                  <h6>24/1/2022 16:40hrs.</h6>
-                  <h5>Santiago Castro</h5>
-                  <button type='button'>Nueva</button>
-                  <button type='button'>Alta</button>
-                  <p>Descripcion Fake </p>
-                </div>
-              </div>
-              <div className='list '>
-                <h4>En Proceso</h4>
-                <div className='card'>
-                  <div className='close'>X</div>
-                  <h3>Tarea 1</h3>
-                  <h6>24/1/2022 16:40hrs.</h6>
-                  <h5>Santiago Castro</h5>
-                  <button type='button'>Nueva</button>
-                  <button type='button'>Alta</button>
-                  <p>Descripcion Fake </p>
-                </div>
-              </div>
-              <div className='list'>
-                <h4>Finalizadas</h4>
-                <div className='card'>
-                  <div className='close'>X</div>
-                  <h3>Tarea 3</h3>
-                  <h6>24/1/2022 16:40hrs.</h6>
-                  <h5>Santiago Castro</h5>
-                  <button type='button'>Nueva</button>
-                  <button type='button'>Alta</button>
-                  <p>
-                    {
-                      limitString(
-                        `Cattt catt cattty cat being a cat in the middle of the night i crawl onto your chest and purr gently to help you sleep poop on the floor, break a planter, sprint, eat own hair, vomit hair, hiss, chirp at birds, eat a squirrel, hide from fireworks, lick toe beans, attack christmas tree. Scratch the box paw at your fat belly but caticus cuteicus, meow. Chase little red dot someday it will be mine! carefully drink from water glass and then spill it everywhere and proceed to lick the puddle for human is behind a closed door, emergency! abandoned! meeooowwww!!!. See owner, run in terror. Cat milk copy park pee walk owner escape bored tired cage droppings sick vet vomit meoooow. Pee in the shoe. What a cat-ass-trophy! pee in the shoe hiss and stare at nothing then run suddenly away hiss and stare at nothing then run suddenly away, meow all night having their mate disturbing sleeping humans`
-                      ).str
-                    }{' '}
-                  </p>
-                </div>
-              </div>
+              {!renderList?.length ? (
+                loading ? (
+                  <>
+                    <Skeleton height={90} />
+                    <Skeleton height={90} />
+                    <Skeleton height={90} />
+                  </>
+                ) : (
+                  <div>No hay tareas creadas</div>
+                )
+              ) : (
+                <>
+                  <div className='list'>
+                    <h4>Nuevas</h4>
+                    {renderNewCards()}
+                  </div>
+                  <div className='list '>
+                    <h4>En Proceso</h4>
+                    {renderInProgressCards()}
+                  </div>
+                  <div className='list'>
+                    <h4>Finalizadas</h4>
+                    {renderFinishedCards()}
+                  </div>
+                </>
+              )}
             </div>
           )}
         </section>

@@ -13,7 +13,7 @@ export const Register = () => {
   const [data, setData] = useState();
 
   useEffect(() => {
-    fetch(`https:${REACT_APP_API_ENDPOINT}auth/data`)
+    fetch('https://goscrum-api.alkemy.org/auth/data')
       .then((response) => response.json())
       .then((data) => setData(data.result));
   }, []);
@@ -64,7 +64,7 @@ export const Register = () => {
     })
       .then((response) => response.json())
       .then((data) =>
-        navigate('/registered/' + data?.result?.user?.teamID, { replace: true })
+         navigate('/registered/' + data?.result?.user?.teamID, { replace: true })
       );
   };
   const formik = useFormik({ initialValues, validationSchema, onSubmit });
@@ -77,7 +77,7 @@ export const Register = () => {
     setFieldValue,
     values,
   } = formik;
-
+ 
   return (
     <div className='auth'>
       <form onSubmit={handleSubmit}>

@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
+
+import swal from '../../../../utils/Alert';
+import 'react-toastify/dist/ReactToastify.css';
 import '../Auth.style.css';
 import * as Yup from 'yup';
 const { REACT_APP_API_ENDPOINT: API_ENDPOINT } = process.env;
@@ -31,13 +34,27 @@ export const Login = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        navigate('/', { replace: true });
-        localStorage.setItem('logged', data?.result?.token);
+        if (data.status_code !== 200) {
+          resetForm();
+          swal();
+          navigate('/login');
+        } else {
+          localStorage.setItem('logged', data?.result?.token);
+          localStorage.setItem('userName', data?.result?.user.userName);
+          navigate('/', { replace: true });
+        }
       });
   };
   const formik = useFormik({ initialValues, validationSchema, onSubmit });
-  const { handleSubmit, handleChange, errors, touched, handleBlur, values } =
-    formik;
+  const {
+    handleSubmit,
+    handleChange,
+    errors,
+    touched,
+    handleBlur,
+    values,
+    resetForm,
+  } = formik;
   return (
     <div className='auth'>
       <form onSubmit={handleSubmit}>
