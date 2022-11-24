@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import debounce from 'lodash.debounce';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import './Task.styles.css';
@@ -14,6 +15,8 @@ import {
 } from '@mui/material';
 const { REACT_APP_API_ENDPOINT: API_ENDPOINT } = process.env;
 export const Task = () => {
+  const [search, setSearch] = useState('');
+  const [tasksFromWho, setTasksFromWho] = useState('ALL');
   const [loading, setLoading] = useState(false);
   const [renderList, setRenderList] = useState(null);
   const [list, setList] = useState(null);
@@ -21,7 +24,7 @@ export const Task = () => {
   useEffect(() => {
     setLoading(true);
 
-    fetch(`https:${API_ENDPOINT}task`, {
+    fetch(`https:${API_ENDPOINT}task${tasksFromWho === 'ME' ? '/me' : ''}`, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer ' + localStorage.getItem('logged'),
@@ -33,31 +36,28 @@ export const Task = () => {
         setRenderList(data?.result);
         setTimeout(() => {
           setLoading(false);
-        }, 3000);
+        }, 1500);
       });
-  }, []);
-  const limitString = (str) => {
-    if (str.length > 370) {
-      return { string: str.slice(0, 367).concat('...'), addButton: true };
-      return { string: str, addButton: false };
+  }, [tasksFromWho]);
+
+  useEffect(() => {
+    if (search) {
+      setRenderList(list?.filter((data) => data.title.startsWith(search)));
+    } else {
+      setRenderList(list);
     }
-  };
-  const renderAllCards = () => {
-    return renderList?.map((data) => <Card key={data.id} data={data} />);
-  };
-  const renderNewCards = () => {
+  }, [search]);
+
+  // const limitString = (str) => {
+  //   if (str.length > 370) {
+  //     return { string: str.slice(0, 367).concat('...'), addButton: true };
+  //     return { string: str, addButton: false };
+  //   }
+  // };
+
+  const renderColumnCards = (text) => {
     return renderList
-      ?.filter((data) => data.status === 'NEW')
-      .map((data) => <Card key={data.id} data={data} />);
-  };
-  const renderInProgressCards = () => {
-    return renderList
-      ?.filter((data) => data.status === 'IN PROGRESS')
-      .map((data) => <Card key={data.id} data={data} />);
-  };
-  const renderFinishedCards = () => {
-    return list
-      ?.filter((data) => data.status === 'FINISHED')
+      ?.filter((data) => data.status === text)
       .map((data) => <Card key={data.id} data={data} />);
   };
   const handleChangeImportance = (event) => {
@@ -69,6 +69,10 @@ export const Task = () => {
       );
     }
   };
+  const handleSearch = debounce((event) => {
+    setSearch(event?.target?.value);
+  }, 1000);
+
   return (
     <>
       <Header />
@@ -84,6 +88,9 @@ export const Task = () => {
                 row
                 aria-labelledby='demo-row-radio-buttons-group-label'
                 name='row-radio-buttons-group'
+                onChange={(event) => {
+                  setTasksFromWho(event.currentTarget.value);
+                }}
               >
                 <FormControlLabel
                   value='ALL'
@@ -97,6 +104,13 @@ export const Task = () => {
                 />
               </RadioGroup>
             </FormControl>
+            <div className='search'>
+              <input
+                type='text'
+                placeholder='Buscar por titulo...'
+                onChange={handleSearch}
+              />
+            </div>
             <select name='importance' onChange={handleChangeImportance}>
               <option value=''>Seleccione una prioridad</option>
               <option value='ALL'>Todas</option>
@@ -133,15 +147,15 @@ export const Task = () => {
                 <>
                   <div className='list'>
                     <h4>Nuevas</h4>
-                    {renderNewCards()}
+                    {renderColumnCards('NEW')}
                   </div>
                   <div className='list '>
                     <h4>En Proceso</h4>
-                    {renderInProgressCards()}
+                    {renderColumnCards('IN PROGRESS')}
                   </div>
                   <div className='list'>
                     <h4>Finalizadas</h4>
-                    {renderFinishedCards()}
+                    {renderColumnCards('FINISHED')}
                   </div>
                 </>
               )}

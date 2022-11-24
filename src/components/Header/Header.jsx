@@ -16,9 +16,11 @@ export const Header = () => {
       />
       <span>Go Scrum</span>
       <div className='wrapper_right_header'>
-        <div>Nombre de usuario: {localStorage.getItem('userName')}</div>
-        <div onClick={handleLogout}>X</div>
+        <div>
+          Nombre de usuario: {localStorage.getItem('userName').toUpperCase()}
+        </div>
       </div>
+      <div onClick={handleLogout}>X</div>
     </header>
   );
 };

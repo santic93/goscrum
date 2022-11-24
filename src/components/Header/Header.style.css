@@ -14,6 +14,8 @@ header > div {
 .wrapper_right_header {
   display: flex;
   flex-direction: row;
+  color: blueviolet;
+  font-weight: bold;
 }
 .wrapper_right_header div:first-child() {
   padding-right: 10px;
