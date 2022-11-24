@@ -10,11 +10,13 @@ export default function Card({
     importance,
   },
 }) {
+  const dateTime = new Date(createdAt).toLocaleString() + 'HS.';
+
   return (
     <div className='card'>
       <div className='close'>X</div>
       <h3>{title}</h3>
-      <h6>{createdAt}</h6>
+      <h6>{dateTime}</h6>
       <h5>{userName}</h5>
       <button type='button'>{status.toLowerCase()}</button>
       <button type='button'>{importance.toLowerCase()}</button>

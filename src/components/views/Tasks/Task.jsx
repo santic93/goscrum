@@ -54,7 +54,10 @@ export const Task = () => {
   //     return { string: str, addButton: false };
   //   }
   // };
-
+  const renderAllCards = () => {
+    return list.map((data) => <Card key={data.id} data={data} />);
+    return renderList?.map((data) => <Card key={data.id} data={data} />);
+  };
   const renderColumnCards = (text) => {
     return renderList
       ?.filter((data) => data.status === text)
