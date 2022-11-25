@@ -48,20 +48,15 @@ export const Task = () => {
     }
   }, [search]);
 
-  // const limitString = (str) => {
-  //   if (str.length > 370) {
-  //     return { string: str.slice(0, 367).concat('...'), addButton: true };
-  //     return { string: str, addButton: false };
-  //   }
-  // };
+
   const renderAllCards = () => {
-    return list.map((data) => <Card key={data.id} data={data} />);
+    return list.map((data,ind) => <Card key={data.id} data={data} />);
     return renderList?.map((data) => <Card key={data.id} data={data} />);
   };
   const renderColumnCards = (text) => {
     return renderList
       ?.filter((data) => data.status === text)
-      .map((data) => <Card key={data.id} data={data} />);
+      .map((data,ind) => <Card key={ind} data={data} />);
   };
   const handleChangeImportance = (event) => {
     if (event.currentTarget.value === 'ALL') {

@@ -72,6 +72,25 @@
   border-color: var(--global-primary-color);
   color: white;
 }
+#tasks .card button .finished {
+  background-color: #1ec876;
+  border-color: #1ec876;
+}
+#tasks .card button .low {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+#tasks .card button .low:hover {
+  background-color: white;
+  color: #007bff;
+}
+
+#tasks .card button.medium,
+#tasks .card button.progress {
+  background-color: #fbde3f;
+  color: black;
+}
+
 #tasks .card p {
   color: #424242;
   display: block;
